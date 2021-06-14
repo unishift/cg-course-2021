@@ -256,23 +256,23 @@ public:
             {GL_GEOMETRY_SHADER, "shaders/particles_geometry.glsl"},
             {GL_FRAGMENT_SHADER, "shaders/particles_fragment.glsl"},
         });
-        shader_programs[ShaderType::CROSSHAIR] = ShaderProgram({
-            {GL_VERTEX_SHADER,   "shaders/crosshair_vertex.glsl"},
-            {GL_FRAGMENT_SHADER, "shaders/crosshair_fragment.glsl"},
-        });
-        shader_programs[ShaderType::EXPLOSION] = ShaderProgram({
-            {GL_VERTEX_SHADER,   "shaders/explosion_vertex.glsl"},
-            {GL_GEOMETRY_SHADER, "shaders/explosion_geometry.glsl"},
-            {GL_FRAGMENT_SHADER, "shaders/explosion_fragment.glsl"},
-        });
-        shader_programs[ShaderType::TEXT] = ShaderProgram({
-            {GL_VERTEX_SHADER,   "shaders/text_vertex.glsl"},
-            {GL_FRAGMENT_SHADER, "shaders/text_fragment.glsl"},
-            });
-        shader_programs[ShaderType::LASER] = ShaderProgram({
-            {GL_VERTEX_SHADER,   "shaders/laser_vertex.glsl"},
-            {GL_FRAGMENT_SHADER, "shaders/laser_fragment.glsl"},
-        });
+//        shader_programs[ShaderType::CROSSHAIR] = ShaderProgram({
+//            {GL_VERTEX_SHADER,   "shaders/crosshair_vertex.glsl"},
+//            {GL_FRAGMENT_SHADER, "shaders/crosshair_fragment.glsl"},
+//        });
+//        shader_programs[ShaderType::EXPLOSION] = ShaderProgram({
+//            {GL_VERTEX_SHADER,   "shaders/explosion_vertex.glsl"},
+//            {GL_GEOMETRY_SHADER, "shaders/explosion_geometry.glsl"},
+//            {GL_FRAGMENT_SHADER, "shaders/explosion_fragment.glsl"},
+//        });
+//        shader_programs[ShaderType::TEXT] = ShaderProgram({
+//            {GL_VERTEX_SHADER,   "shaders/text_vertex.glsl"},
+//            {GL_FRAGMENT_SHADER, "shaders/text_fragment.glsl"},
+//            });
+//        shader_programs[ShaderType::LASER] = ShaderProgram({
+//            {GL_VERTEX_SHADER,   "shaders/laser_vertex.glsl"},
+//            {GL_FRAGMENT_SHADER, "shaders/laser_fragment.glsl"},
+//        });
         GL_CHECK_ERRORS;
     }
 
@@ -354,6 +354,8 @@ public:
 
         glfwGetCursorPos(window, &xpos, &ypos);
     }
+
+
 
     void draw_skybox() {
         auto& program = shader_programs[ShaderType::SKYBOX];

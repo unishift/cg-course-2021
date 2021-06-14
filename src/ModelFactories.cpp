@@ -5,11 +5,11 @@
 void ModelFactory::load() {
     model_path = {
         {ModelName::E45_AIRCRAFT, "models/E-45-Aircraft/E 45 Aircraft_obj.obj"},
-        {ModelName::ROCKET, "models/rocket/Rocket.obj"},
+//        {ModelName::ROCKET, "models/rocket/Rocket.obj"},
         {ModelName::REPVENATOR, "models/Venator/export.obj"},
-        {ModelName::FIGHTER, "models/fighter/sci-fi_fighter.obj"},
-        {ModelName::DEATHROW, "models/deathrow/DeathRow.obj"},
-        {ModelName::MYST_ASTEROID, "models/mysterious_asteroid/A2.obj"},
+//        {ModelName::FIGHTER, "models/fighter/sci-fi_fighter.obj"},
+//        {ModelName::DEATHROW, "models/deathrow/DeathRow.obj"},
+//        {ModelName::MYST_ASTEROID, "models/mysterious_asteroid/A2.obj"},
         {ModelName::ASTEROID1, "models/asteroid1/asteroid1.obj"},
     };
 
