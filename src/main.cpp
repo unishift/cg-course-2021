@@ -287,6 +287,11 @@ public:
         });
     }
 
+    void init_objects() {
+        enemies.push_back(model_factory.get_model(ModelName::REPVENATOR, glm::vec3(0., 0., -50.)));
+        enemies.push_back(model_factory.get_model(ModelName::ASTEROID1, glm::vec3(10., 5., -35.)));
+    }
+
     int init() {
         int return_code;
 
@@ -315,6 +320,8 @@ public:
         laser.init();
         particles = Particles(1000);
         main_ship = model_factory.get_model(ModelName::E45_AIRCRAFT);
+
+        init_objects();
 
         glfwSwapInterval(1); // force 60 frames per second
 
