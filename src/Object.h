@@ -72,6 +72,8 @@ public:
     std::vector<GLfloat> vertices;
     std::vector<GLuint> elements;
 
+    SkyBox() = default;
+
     explicit SkyBox(GLuint texture_index);
 
     void draw() const {
@@ -93,6 +95,7 @@ class Particles {
     std::vector<GLfloat> vertices;
 public:
 
+    Particles() = default;
     explicit Particles(int nb_particles);
 
     void draw() const {
@@ -115,7 +118,9 @@ class Crosshair {
 
 public:
 
-    Crosshair();
+    Crosshair() = default;
+
+    void init();
 
     void draw() const {
         glBindVertexArray(VAO);
@@ -133,7 +138,9 @@ class Laser {
 public:
     int recharge = 0;
 
-    Laser();
+    Laser() = default;
+
+    void init();
 
     void draw(const glm::vec3& src, const glm::vec3& dst) const {
         glBindVertexArray(VAO);

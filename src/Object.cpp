@@ -179,7 +179,7 @@ Particles::Particles(int nb_particles) {
     glBindVertexArray(0);
 }
 
-Crosshair::Crosshair() {
+void Crosshair::init() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
@@ -194,7 +194,7 @@ Crosshair::Crosshair() {
     glBindVertexArray(0);
 }
 
-Laser::Laser() {
+void Laser::init() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 

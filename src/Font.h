@@ -17,6 +17,7 @@ class Font {
     std::array<Character, 128> chars;
     GLuint VAO, VBO;
 public:
+    Font() = default;
     explicit Font(const std::string& path);
 
     void draw(const std::string& text) const;

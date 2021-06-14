@@ -2,7 +2,7 @@
 
 #include <glm/gtx/norm.hpp>
 
-ModelFactory::ModelFactory() {
+void ModelFactory::load() {
     model_path = {
         {ModelName::E45_AIRCRAFT, "models/E-45-Aircraft/E 45 Aircraft_obj.obj"},
         {ModelName::ROCKET, "models/rocket/Rocket.obj"},

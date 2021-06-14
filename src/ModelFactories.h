@@ -19,7 +19,7 @@ class ModelFactory {
     std::map<ModelName, std::string> model_path;
     std::map<ModelName, Model> model_buffer;
 public:
-    ModelFactory();
+    void load();
 
     Model get_model(ModelName model_name, const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), float scale = 1.0f) const;
 
