@@ -438,6 +438,10 @@ public:
     }
 
     int game_loop() {
+        float asteroid_state = 0.f;
+        constexpr float asteroid_step = 2 * M_PI / 60 / 10;  // Round every 10 seconds
+        const glm::vec3 asteroid_center = enemies.back().world_pos;
+
         while (!glfwWindowShouldClose(window)) {
             // Tech stuff
             glfwPollEvents();
@@ -452,6 +456,12 @@ public:
             main_ship.move(camera_shift);
             particles_state += speed_multiplier * enemies_speed;
             speed_multiplier += 0.0001f;
+
+            {
+                auto& asteroid = enemies.back();
+                asteroid.world_pos = asteroid_center + 10.f * glm::vec3(sinf(asteroid_state), 0.f, cosf(asteroid_state));
+                asteroid_state += asteroid_step;
+            }
 
             // Drawing
 
