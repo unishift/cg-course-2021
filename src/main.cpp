@@ -187,7 +187,6 @@ public:
 
     int score = 0;
     float main_ship_hp = 100.0;
-    Model main_ship;
     std::list<Model> enemies;
     std::list<Asteroid> asteroids;
 
@@ -288,7 +287,13 @@ public:
     }
 
     void init_objects() {
+        // Main ship
+        enemies.push_back(model_factory.get_model(ModelName::E45_AIRCRAFT));
+
+        // Stationary object
         enemies.push_back(model_factory.get_model(ModelName::REPVENATOR, glm::vec3(0., 0., -50.)));
+
+        // Moving object
         enemies.push_back(model_factory.get_model(ModelName::ASTEROID1, glm::vec3(10., 5., -35.)));
     }
 
@@ -319,7 +324,6 @@ public:
         crosshair.init();
         laser.init();
         particles = Particles(1000);
-        main_ship = model_factory.get_model(ModelName::E45_AIRCRAFT);
 
         init_objects();
 
@@ -415,31 +419,10 @@ public:
         }
     }
 
-    void draw_player() {
-        auto& program = shader_programs[ShaderType::CLASSIC];
-        program.StartUseShader();
-
-        const auto local = perspective_transform * main_ship.getWorldTransform();
-        for (const auto &object : main_ship.objects) {
-            const auto transform = local * object.getWorldTransform();
-            program.SetUniform("transform", transform);
-
-            const auto color = object.getDiffuseColor();
-            program.SetUniform("diffuse_color", color);
-
-            const bool use_texture = object.haveTexture();
-            program.SetUniform("use_texture", use_texture);
-
-            const float opacity = object.getOpacity();
-            program.SetUniform("opacity", opacity);
-
-            object.draw();
-            GL_CHECK_ERRORS;
-        }
-        program.StopUseShader();
-    }
-
     int game_loop() {
+        auto& main_ship = enemies.front();
+
+        auto& asteroid = enemies.back();
         float asteroid_state = 0.f;
         constexpr float asteroid_step = 2 * M_PI / 60 / 10;  // Round every 10 seconds
         const glm::vec3 asteroid_center = enemies.back().world_pos;
@@ -459,18 +442,14 @@ public:
             particles_state += speed_multiplier * enemies_speed;
             speed_multiplier += 0.0001f;
 
-            {
-                auto& asteroid = enemies.back();
-                asteroid.world_pos = asteroid_center + 10.f * glm::vec3(sinf(asteroid_state), 0.f, cosf(asteroid_state));
-                asteroid_state += asteroid_step;
-            }
+            asteroid.world_pos = asteroid_center + 10.f * glm::vec3(sinf(asteroid_state), 0.f, cosf(asteroid_state));
+            asteroid_state += asteroid_step;
 
             // Drawing
 
             draw_skybox();
             draw_particles();
             draw_objects();
-            draw_player();
 
             glfwSwapBuffers(window);
         }
