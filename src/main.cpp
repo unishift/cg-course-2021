@@ -243,35 +243,18 @@ public:
 
     void compile_shaders() {
         shader_programs[ShaderType::CLASSIC] = ShaderProgram({
-            {GL_VERTEX_SHADER,   "shaders/classic_vertex.glsl"},
-            {GL_FRAGMENT_SHADER, "shaders/classic_fragment.glsl"},
+            {GL_VERTEX_SHADER,   "shaders/classic/classic_vertex.glsl"},
+            {GL_FRAGMENT_SHADER, "shaders/classic/classic_fragment.glsl"},
         });
         shader_programs[ShaderType::SKYBOX] = ShaderProgram({
-            {GL_VERTEX_SHADER,   "shaders/skybox_vertex.glsl"},
-            {GL_FRAGMENT_SHADER, "shaders/skybox_fragment.glsl"},
+            {GL_VERTEX_SHADER,   "shaders/skybox/skybox_vertex.glsl"},
+            {GL_FRAGMENT_SHADER, "shaders/skybox/skybox_fragment.glsl"},
         });
         shader_programs[ShaderType::PARTICLES] = ShaderProgram({
-            {GL_VERTEX_SHADER,   "shaders/particles_vertex.glsl"},
-            {GL_GEOMETRY_SHADER, "shaders/particles_geometry.glsl"},
-            {GL_FRAGMENT_SHADER, "shaders/particles_fragment.glsl"},
+            {GL_VERTEX_SHADER,   "shaders/particles/particles_vertex.glsl"},
+            {GL_GEOMETRY_SHADER, "shaders/particles/particles_geometry.glsl"},
+            {GL_FRAGMENT_SHADER, "shaders/particles/particles_fragment.glsl"},
         });
-//        shader_programs[ShaderType::CROSSHAIR] = ShaderProgram({
-//            {GL_VERTEX_SHADER,   "shaders/crosshair_vertex.glsl"},
-//            {GL_FRAGMENT_SHADER, "shaders/crosshair_fragment.glsl"},
-//        });
-//        shader_programs[ShaderType::EXPLOSION] = ShaderProgram({
-//            {GL_VERTEX_SHADER,   "shaders/explosion_vertex.glsl"},
-//            {GL_GEOMETRY_SHADER, "shaders/explosion_geometry.glsl"},
-//            {GL_FRAGMENT_SHADER, "shaders/explosion_fragment.glsl"},
-//        });
-//        shader_programs[ShaderType::TEXT] = ShaderProgram({
-//            {GL_VERTEX_SHADER,   "shaders/text_vertex.glsl"},
-//            {GL_FRAGMENT_SHADER, "shaders/text_fragment.glsl"},
-//            });
-//        shader_programs[ShaderType::LASER] = ShaderProgram({
-//            {GL_VERTEX_SHADER,   "shaders/laser_vertex.glsl"},
-//            {GL_FRAGMENT_SHADER, "shaders/laser_fragment.glsl"},
-//        });
         GL_CHECK_ERRORS;
     }
 
