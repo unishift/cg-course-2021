@@ -214,7 +214,7 @@ public:
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
         glfwWindowHint(GLFW_SAMPLES, 4);
 
-        window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL basic sample", nullptr, nullptr);
+        window = glfwCreateWindow(WIDTH, HEIGHT, "Lights and Shadows", nullptr, nullptr);
         if (window == nullptr) {
             std::cout << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
