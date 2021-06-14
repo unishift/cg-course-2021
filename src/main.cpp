@@ -4,6 +4,7 @@
 #include "ModelFactories.h"
 #include "Camera.h"
 #include "Font.h"
+#include "ShadowMap.h"
 
 // External dependencies
 #define GLFW_DLL
@@ -291,7 +292,7 @@ public:
 
     void init_objects() {
         // Main ship
-        enemies.push_back(model_factory.get_model(ModelName::E45_AIRCRAFT));
+        enemies.push_back(model_factory.get_model(ModelName::E45_AIRCRAFT, glm::vec3(3.6, 1.9, -31.9)));
 
         // Stationary object
         enemies.push_back(model_factory.get_model(ModelName::REPVENATOR, glm::vec3(0., 0., -50.)));
@@ -362,8 +363,6 @@ public:
         glfwGetCursorPos(window, &xpos, &ypos);
     }
 
-
-
     void draw_skybox() {
         auto& program = shader_programs[ShaderType::SKYBOX];
 
@@ -399,7 +398,6 @@ public:
         program.StartUseShader();
         GL_CHECK_ERRORS;
 
-
         // Draw enemies
         for (const auto &model : enemies) {
             if (model.dead) continue;
@@ -424,7 +422,7 @@ public:
         program.StopUseShader();
     }
 
-    void draw_depth() {
+    void draw_depth(const glm::mat4& matrix) {
         auto& program = shader_programs[ShaderType::DEPTH];
         program.StartUseShader();
         GL_CHECK_ERRORS;
@@ -432,7 +430,7 @@ public:
         // Draw enemies
         for (const auto &model : enemies) {
             if (model.dead) continue;
-            const auto local = perspective_transform * model.getWorldTransform();
+            const auto local = matrix * model.getWorldTransform();
             for (const auto &object : model.objects) {
                 const auto transform = local * object.getWorldTransform();
                 program.SetUniform("transform", transform);
@@ -452,10 +450,20 @@ public:
         constexpr float asteroid_step = 2 * M_PI / 60 / 10;  // Round every 10 seconds
         const glm::vec3 asteroid_center = enemies.back().world_pos;
 
+        // Shadows
+
+        ShadowMap shadow_map(
+            glm::ortho<float>(-30, 30, -20, 20, 20, 80)
+          * glm::lookAt(glm::vec3(20, 20, -5), glm::vec3(0, 0, -30), glm::vec3(0, 1, 0))
+        );
+        shadow_map.init(WIDTH, HEIGHT);
+
         while (!glfwWindowShouldClose(window)) {
             // Tech stuff
             glfwPollEvents();
 
+            glViewport(0, 0, WIDTH, HEIGHT);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             GL_CHECK_ERRORS;
 
@@ -463,7 +471,6 @@ public:
 
             modify_env();
 
-//            main_ship.move(camera_shift);
             particles_state += speed_multiplier * enemies_speed;
             speed_multiplier += 0.0001f;
 
@@ -472,17 +479,24 @@ public:
 
             // Drawing
 
-            switch (main_shader) {
-            case ShaderType::CLASSIC:
-                draw_skybox();
-                draw_particles();
-                draw_objects();
-                break;
-            case ShaderType::DEPTH:
-                draw_depth();
-                break;
-            default:
-                return -1;
+            shadow_map.activate();
+            draw_depth(shadow_map.matrix);
+            shadow_map.deactivate();
+
+            draw_skybox();
+            draw_particles();
+            draw_objects();
+
+            if (main_shader == ShaderType::DEPTH) {
+                glViewport(0, 0, WIDTH / 3, HEIGHT / 3);
+
+                glScissor(0, 0, WIDTH / 3, HEIGHT / 3);
+                glEnable(GL_SCISSOR_TEST);
+                glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glDisable(GL_SCISSOR_TEST);
+
+                draw_depth(shadow_map.matrix);
             }
 
             glfwSwapBuffers(window);

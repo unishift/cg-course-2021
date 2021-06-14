@@ -17,7 +17,7 @@ set(SOURCE_FILES
         src/ModelFactories.cpp
         src/BBox.h
         src/BBox.cpp
-        src/Camera.h src/Font.cpp src/Font.h)
+        src/Camera.h src/Font.cpp src/Font.h src/ShadowMap.cpp src/ShadowMap.h)
 
 set(ADDITIONAL_INCLUDE_DIRS
         dependencies/include/GLAD)
