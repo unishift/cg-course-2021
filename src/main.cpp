@@ -41,7 +41,7 @@ const glm::vec3 up(0.0f, scale, 0.0f);
 static bool permitMouseMove = false;
 
 // Prepare transformations
-const auto perspective = glm::perspective(glm::radians(45.0f), float(WIDTH) / HEIGHT, 0.1f, 1000.0f);
+const auto perspective = glm::perspective(glm::radians(45.0f), float(WIDTH) / HEIGHT, 10.f, 80.0f);
 
 static float yaw = 0.0;
 static float pitch = 0.0;
@@ -81,6 +81,13 @@ static void mouseButton(GLFWwindow *window, int button, int action, int mods) {
     }
 }
 
+enum class ShaderType {
+    CLASSIC,
+    SKYBOX,
+    PARTICLES,
+    DEPTH
+};
+
 // Callback for movement controls
 // W - forward
 // A - left
@@ -91,7 +98,8 @@ static void mouseButton(GLFWwindow *window, int button, int action, int mods) {
 // SPACE - reset position
 float multiplier = 0.1f;
 glm::vec3 step = {0.0f, 0.0f, 0.0f};
-CameraMode camera_mode = CameraMode::THIRD_PERSON;
+CameraMode camera_mode = CameraMode::FIRST_PERSON;
+ShaderType main_shader = ShaderType::CLASSIC;
 static void keyboardControls(GLFWwindow *window, int key, int scancode, int action, int mods) {
     switch (key) {
         case GLFW_KEY_W:
@@ -144,6 +152,16 @@ static void keyboardControls(GLFWwindow *window, int key, int scancode, int acti
                 multiplier /= 2;
             }
             break;
+        case GLFW_KEY_1:
+            if (action == GLFW_PRESS) {
+                main_shader = ShaderType::CLASSIC;
+            }
+            break;
+        case GLFW_KEY_2:
+            if (action == GLFW_PRESS) {
+                main_shader = ShaderType::DEPTH;
+            }
+            break;
         case GLFW_KEY_F2:
             if (action == GLFW_PRESS) {
                 camera_mode = CameraMode::FIRST_PERSON;
@@ -161,16 +179,6 @@ static void keyboardControls(GLFWwindow *window, int key, int scancode, int acti
             break;
     }
 }
-
-enum class ShaderType {
-    CLASSIC,
-    SKYBOX,
-    PARTICLES,
-    CROSSHAIR,
-    EXPLOSION,
-    TEXT,
-    LASER,
-};
 
 class Game {
 public:
@@ -237,8 +245,10 @@ public:
             gl_error = glGetError();
 
         glViewport(0, 0, WIDTH, HEIGHT);
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         GL_CHECK_ERRORS;
+
+        return 0;
     }
 
     void compile_shaders() {
@@ -246,14 +256,24 @@ public:
             {GL_VERTEX_SHADER,   "shaders/classic/classic_vertex.glsl"},
             {GL_FRAGMENT_SHADER, "shaders/classic/classic_fragment.glsl"},
         });
+        GL_CHECK_ERRORS;
+
         shader_programs[ShaderType::SKYBOX] = ShaderProgram({
             {GL_VERTEX_SHADER,   "shaders/skybox/skybox_vertex.glsl"},
             {GL_FRAGMENT_SHADER, "shaders/skybox/skybox_fragment.glsl"},
         });
+        GL_CHECK_ERRORS;
+
         shader_programs[ShaderType::PARTICLES] = ShaderProgram({
             {GL_VERTEX_SHADER,   "shaders/particles/particles_vertex.glsl"},
             {GL_GEOMETRY_SHADER, "shaders/particles/particles_geometry.glsl"},
             {GL_FRAGMENT_SHADER, "shaders/particles/particles_fragment.glsl"},
+        });
+        GL_CHECK_ERRORS;
+
+        shader_programs[ShaderType::DEPTH] = ShaderProgram({
+            {GL_VERTEX_SHADER,   "shaders/depth/depth_vertex.glsl"},
+            {GL_FRAGMENT_SHADER, "shaders/depth/depth_fragment.glsl"},
         });
         GL_CHECK_ERRORS;
     }
@@ -379,6 +399,7 @@ public:
         program.StartUseShader();
         GL_CHECK_ERRORS;
 
+
         // Draw enemies
         for (const auto &model : enemies) {
             if (model.dead) continue;
@@ -400,6 +421,27 @@ public:
                 GL_CHECK_ERRORS;
             }
         }
+        program.StopUseShader();
+    }
+
+    void draw_depth() {
+        auto& program = shader_programs[ShaderType::DEPTH];
+        program.StartUseShader();
+        GL_CHECK_ERRORS;
+
+        // Draw enemies
+        for (const auto &model : enemies) {
+            if (model.dead) continue;
+            const auto local = perspective_transform * model.getWorldTransform();
+            for (const auto &object : model.objects) {
+                const auto transform = local * object.getWorldTransform();
+                program.SetUniform("transform", transform);
+
+                object.draw();
+                GL_CHECK_ERRORS;
+            }
+        }
+        program.StopUseShader();
     }
 
     int game_loop() {
@@ -421,7 +463,7 @@ public:
 
             modify_env();
 
-            main_ship.move(camera_shift);
+//            main_ship.move(camera_shift);
             particles_state += speed_multiplier * enemies_speed;
             speed_multiplier += 0.0001f;
 
@@ -430,9 +472,18 @@ public:
 
             // Drawing
 
-            draw_skybox();
-            draw_particles();
-            draw_objects();
+            switch (main_shader) {
+            case ShaderType::CLASSIC:
+                draw_skybox();
+                draw_particles();
+                draw_objects();
+                break;
+            case ShaderType::DEPTH:
+                draw_depth();
+                break;
+            default:
+                return -1;
+            }
 
             glfwSwapBuffers(window);
         }
