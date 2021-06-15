@@ -34,6 +34,7 @@ void ShadowMap::activate() {
     glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
     glViewport(0, 0, width, height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glCullFace(GL_FRONT);
 }
 
 void ShadowMap::deactivate() {
@@ -44,4 +45,5 @@ void ShadowMap::bind()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthTexture);
     glActiveTexture(GL_TEXTURE0);
+    glCullFace(GL_BACK);
 }
