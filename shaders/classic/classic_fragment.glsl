@@ -13,8 +13,20 @@ uniform int use_texture;
 uniform float opacity;
 uniform sampler2DShadow shadow_map;
 
+vec2 poisson_coeffs[4] = vec2[](
+    vec2(-0.94201624,   -0.39906216),
+    vec2(0.94558609,    -0.76890725),
+    vec2(-0.094184101,  -0.92938870),
+    vec2(0.34495938,     0.29387760)
+);
+
 void main() {
-    float visibility = texture(shadow_map, vec3(depth_coords.xy, depth_coords.z / depth_coords.w));
+    float bias = 0.005f;
+    float visibility = 1.0f;
+
+    for (int i = 0; i < 4; i++) {
+        visibility -= 0.2f * (1.f - texture(shadow_map, vec3(depth_coords.xy + poisson_coeffs[i] / 700.f, (depth_coords.z - bias) / depth_coords.w)));
+    }
 
     vec3 n = normalize(normal_transformed);
     vec3 l = normalize(light_transformed);
