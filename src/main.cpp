@@ -42,7 +42,7 @@ const glm::vec3 up(0.0f, scale, 0.0f);
 static bool permitMouseMove = false;
 
 // Prepare transformations
-const auto perspective = glm::perspective(glm::radians(45.0f), float(WIDTH) / HEIGHT, 10.f, 80.0f);
+const auto perspective = glm::perspective(glm::radians(45.0f), float(WIDTH) / HEIGHT, 0.1f, 80.0f);
 
 static float yaw = 0.0;
 static float pitch = 0.0;
