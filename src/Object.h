@@ -14,18 +14,19 @@
 
 class Object {
 protected:
-    GLuint VAO, VBO, EBO, TBO;
+    GLuint VAO, VBO, EBO, TBO, NBO;
     Material material;
 
 public:
     std::vector<GLfloat> vertices;
     std::vector<GLuint> elements;
     std::vector<GLfloat> texture_coords;
+    std::vector<GLfloat> normals;
 
     glm::vec3 world_pos;
     glm::mat4 rot;
 
-    Object(const std::vector<float>& vertices, const std::vector<GLuint>& elements, const std::vector<GLfloat>& texture_coords, const Material& material);
+    Object(const std::vector<float>& vertices, const std::vector<GLuint>& elements, const std::vector<GLfloat>& texture_coords, const Material& material, const std::vector<GLfloat>& normals);
 
     void move(const glm::vec3& translation) {
         world_pos += translation;

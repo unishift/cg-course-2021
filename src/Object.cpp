@@ -2,10 +2,11 @@
 
 #include <random>
 
-Object::Object(const std::vector<float>& vertices, const std::vector<GLuint>& elements, const std::vector<GLfloat>& texture_coords, const Material& material) :
+Object::Object(const std::vector<float>& vertices, const std::vector<GLuint>& elements, const std::vector<GLfloat>& texture_coords, const Material& material, const std::vector<GLfloat>& normals) :
     vertices(vertices),
     elements(elements),
     texture_coords(texture_coords),
+    normals(normals),
     material(material),
     world_pos(0.0f, 0.0f, 0.0f),
     rot(1.0f) {
@@ -14,6 +15,7 @@ Object::Object(const std::vector<float>& vertices, const std::vector<GLuint>& el
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
     glGenBuffers(1, &TBO);
+    glGenBuffers(1, &NBO);
 
     glBindVertexArray(VAO);
 
@@ -32,6 +34,12 @@ Object::Object(const std::vector<float>& vertices, const std::vector<GLuint>& el
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
+    glBindBuffer(GL_ARRAY_BUFFER, NBO);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(GLfloat), normals.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
     glBindVertexArray(0);
 }
 
@@ -39,18 +47,29 @@ Object Object::create(const aiMesh *mesh, const Material &material) {
     std::vector<GLfloat> vertices;
     std::vector<GLuint> elements;
     std::vector<GLfloat> texture_coords;
+    std::vector<GLfloat> normals;
 
-    // Vertices
+
     for (int i = 0; i < mesh->mNumVertices; i++) {
+        // Vertices
         const auto& vertex = mesh->mVertices[i];
 
         vertices.push_back(vertex.x);
         vertices.push_back(vertex.y);
         vertices.push_back(vertex.z);
 
+        // Normals
+        const auto& normal = mesh->mNormals[i];
+
+        normals.push_back(normal.x);
+        normals.push_back(normal.y);
+        normals.push_back(normal.z);
+
         // Texture coordinates
-        texture_coords.push_back(mesh->mTextureCoords[0][i].x);
-        texture_coords.push_back(mesh->mTextureCoords[0][i].y);
+        const auto& texture = mesh->mTextureCoords[0][i];
+
+        texture_coords.push_back(texture.x);
+        texture_coords.push_back(texture.y);
     }
 
     // Indices
@@ -62,7 +81,16 @@ Object Object::create(const aiMesh *mesh, const Material &material) {
         }
     }
 
-    return Object(vertices, elements, texture_coords, material);
+    // Normals
+    for (int i = 0; i < mesh->mNumVertices; i++) {
+
+
+        // Texture coordinates
+        texture_coords.push_back(mesh->mTextureCoords[0][i].x);
+        texture_coords.push_back(mesh->mTextureCoords[0][i].y);
+    }
+
+    return Object(vertices, elements, texture_coords, material, normals);
 }
 
 SkyBox SkyBox::create(const std::array<std::string, 6>& file_names) {

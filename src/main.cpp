@@ -423,6 +423,9 @@ public:
                 const float opacity = object.getOpacity();
                 program.SetUniform("opacity", opacity);
 
+                const auto light_direction = glm::vec3(-20.f, -20.f, -25.f);
+                program.SetUniform("light_direction", -light_direction);
+
                 program.SetUniform("Texture", 0);
                 program.SetUniform("shadow_map", 1);
 
