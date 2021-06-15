@@ -393,7 +393,8 @@ public:
         program.StopUseShader();
     }
 
-    void draw_objects() {
+    void draw_objects(const glm::mat4& depth_matrix)
+    {
         auto& program = shader_programs[ShaderType::CLASSIC];
         program.StartUseShader();
         GL_CHECK_ERRORS;
@@ -401,10 +402,16 @@ public:
         // Draw enemies
         for (const auto &model : enemies) {
             if (model.dead) continue;
+
             const auto local = perspective_transform * model.getWorldTransform();
+            const auto depth = depth_matrix * model.getWorldTransform();
+
             for (const auto &object : model.objects) {
                 const auto transform = local * object.getWorldTransform();
                 program.SetUniform("transform", transform);
+
+                const auto depth_transform = depth * object.getWorldTransform();
+                program.SetUniform("depth_transform", depth_transform);
 
                 const auto color = object.getDiffuseColor();
                 program.SetUniform("diffuse_color", color);
@@ -414,6 +421,9 @@ public:
 
                 const float opacity = object.getOpacity();
                 program.SetUniform("opacity", opacity);
+
+                program.SetUniform("Texture", 0);
+                program.SetUniform("shadow_map", 1);
 
                 object.draw();
                 GL_CHECK_ERRORS;
@@ -444,6 +454,7 @@ public:
 
     int game_loop() {
         auto& main_ship = enemies.front();
+
 
         auto& asteroid = enemies.back();
         float asteroid_state = 0.f;
@@ -483,11 +494,22 @@ public:
             draw_depth(shadow_map.matrix);
             shadow_map.deactivate();
 
+            const glm::mat4 bias(
+                0.5, 0.0, 0.0, 0.0,
+                0.0, 0.5, 0.0, 0.0,
+                0.0, 0.0, 0.5, 0.0,
+                0.5, 0.5, 0.5, 1.0
+            );
+            const glm::mat4 depth_matrix = bias * shadow_map.matrix;
+
             draw_skybox();
             draw_particles();
-            draw_objects();
+
+            shadow_map.bind();
+            draw_objects(depth_matrix);
 
             if (main_shader == ShaderType::DEPTH) {
+                // Show depth only in part of the screen
                 glViewport(0, 0, WIDTH / 3, HEIGHT / 3);
 
                 glScissor(0, 0, WIDTH / 3, HEIGHT / 3);
