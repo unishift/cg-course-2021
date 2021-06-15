@@ -25,7 +25,7 @@ void main() {
     float visibility = 1.0f;
 
     for (int i = 0; i < 4; i++) {
-        visibility -= 0.2f * (1.f - texture(shadow_map, vec3(depth_coords.xy + poisson_coeffs[i] / 700.f, (depth_coords.z - bias) / depth_coords.w)));
+        visibility -= 0.2f * (1.f - texture(shadow_map, vec3(depth_coords.xy + poisson_coeffs[i] / 1000.f, (depth_coords.z - bias) / depth_coords.w)));
     }
 
     vec3 n = normalize(normal_transformed);

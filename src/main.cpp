@@ -423,7 +423,7 @@ public:
                 const float opacity = object.getOpacity();
                 program.SetUniform("opacity", opacity);
 
-                const auto light_direction = glm::vec3(-20.f, -20.f, -25.f);
+                const auto light_direction = glm::vec3(-15.f, -15.f, -35.f);
                 program.SetUniform("light_direction", -light_direction);
 
                 program.SetUniform("Texture", 0);
@@ -459,6 +459,7 @@ public:
     int game_loop() {
         auto& main_ship = enemies.front();
 
+        camera.move({4, 4, 0});
 
         auto& asteroid = enemies.back();
         float asteroid_state = 0.f;
@@ -468,8 +469,8 @@ public:
         // Shadows
 
         ShadowMap shadow_map(
-            glm::ortho<float>(-30, 30, -20, 20, 20, 80)
-          * glm::lookAt(glm::vec3(20, 20, -5), glm::vec3(0, 0, -30), glm::vec3(0, 1, 0))
+            glm::ortho<float>(-30, 30, -20, 20, 10, 80)
+          * glm::lookAt(glm::vec3(12, 12, -12), glm::vec3(0, 0, -40), glm::vec3(0, 1, 0))
         );
         shadow_map.init(WIDTH, HEIGHT);
 
