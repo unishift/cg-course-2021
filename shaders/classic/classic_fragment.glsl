@@ -38,5 +38,6 @@ void main() {
         color = diffuse_color;
     }
     color *= visibility * cos_theta;
+    color += 0.1f;
     color.a = opacity;
 }
